@@ -3,7 +3,7 @@
 #define MOVE_TO_BEGINNING "\033[H"
 #define RESET "\033[0m"
 #define PLAYER "\033[1;31m"
-#define DESIBLECUR "\033[?25l"
+#define DISIBLECUR "\033[?25l"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -109,7 +109,6 @@ vector<vector<string>> init(int y, int x, vector<int>(&playercords)) {
 
 	vector<vector<string>> maps(y + 2, vector<string>(x + 2, Init));
 	vector<string> borders(x + 2, Wall);
-
 
 
 	maps[0] = borders;

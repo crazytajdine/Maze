@@ -3,13 +3,20 @@
 
 int main() {
 
-    cout << DESIBLECUR;
-    int x = 20;
-    int y = 20;
+    cout << DISIBLECUR;
+
+    cout << "give y (rows): ";
+    int y ;
+    cin >> y;
+    cout << "give x (columns): ";
+    int x ;
+    cin >> x;
+
+
+
     vector<int> playerpos ;
 
     vector<vector<string>> maps = init(y, x, playerpos);
-
     showmaze(maps, y, x);
     bool win = false; 
 
