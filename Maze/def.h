@@ -3,34 +3,104 @@
 #define MOVE_TO_BEGINNING "\033[H"
 #define RESET "\033[0m"
 #define PLAYER "\033[1;31m"
+#define WINFLAG "\033[1;32m"
 #define DISIBLECUR "\033[?25l"
+#define ENABLECUR "\033[?25h"
+#define MOVE_UP_1_LINE "\033[1A"
+
+
+
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <conio.h>
+#include <thread>
+#include <chrono>
+
 using namespace std;
+using namespace std ::chrono;
 
 const string Init = "@ ";
 const string Route = "  ";
 const string Wall = "# ";
 const string Player = "$ ";
 const string Winflag = "W ";
+const int zonelight = 2;
+const int OPTIONS_COUNT = 2;
+vector<string> options = { "Normal mode","Dark mode" };
+
+
+int distance(vector<int> v1, vector<int> v2) {
+
+	return sqrt(pow((v1[0] - v2[0]), 2) + pow((v1[1] - v2[1]), 2));
+}
+#include <iostream>
+#include <conio.h>
+
+
+void displayMenu(int selectedOption) {
+
+
+	if (selectedOption == 0) {
+		cout << WINFLAG << "   Normal mode" <<"\r" << RESET << endl;
+		cout  << "   DARK mode" << "\r";
+
+	}
+	else {
+		cout << "   Normal mode" << "\r" <<endl;
+		cout << WINFLAG << "   DARK mode" << "\r" << RESET;
+
+	}
+	cout << MOVE_UP_1_LINE;
+}
+
+
+
+
+
 
 void showmaze(vector<vector<string>> maps, int y, int x) {
 	cout << MOVE_TO_BEGINNING;
 	for (int j = 0; j < y + 2; j++) {
 		for (int i = 0; i < x + 2; i++) {
+			if (maps[j][i] == Winflag) {
+				cout << WINFLAG << maps[j][i] << RESET;
+				continue;
+			}
 			if (maps[j][i] == Player) {
 				cout << PLAYER << maps[j][i] << RESET;
 				continue;
 			}
-			cout << maps[j][i];
+			cout  << maps[j][i];
 		}
 		cout << "\r\n";
 	}
 }
-
+void darkshowmazemode(vector<vector<string>> maps, int y, int x, vector<int> playercords) {
+	cout << MOVE_TO_BEGINNING;
+	for (int j = 0; j < y + 2; j++) {
+		for (int i = 0; i < x + 2; i++) {
+			if (distance(playercords, { j,i }) <= zonelight) {
+				if (maps[j][i] == Winflag) {
+					cout << WINFLAG << maps[j][i] << RESET;
+					continue;
+				}
+				if (maps[j][i] == Player) {
+					cout << PLAYER << maps[j][i] << RESET;
+					continue;
+				}
+				cout << maps[j][i];
+			}
+			else {
+				cout << Route;
+			}
+		}
+		cout << "\r\n";
+	}
+}
 void genmap(vector<vector<string>>& maps, int ycords, int xcords, int sizey, int sizex) {
+
 
 	vector<vector<int>> isee;
 	vector<vector<int>> icangoto;
@@ -54,6 +124,7 @@ void genmap(vector<vector<string>>& maps, int ycords, int xcords, int sizey, int
 
 		return;
 	}
+
 	int choosenPathindex = rand() % icangoto.size();
 	ycords = icangoto[choosenPathindex][0];
 	xcords = icangoto[choosenPathindex][1];
@@ -102,6 +173,7 @@ void genmap(vector<vector<string>>& maps, int ycords, int xcords, int sizey, int
 
 	}
 
+
 }
 
 
@@ -112,15 +184,15 @@ vector<vector<string>> init(int y, int x, vector<int>(&playercords)) {
 
 
 	maps[0] = borders;
-	maps[x + 1] = borders;
+	maps[y + 1] = borders;
 
 	for (int j = 0; j < y; j++) {
 		maps[j + 1][0] = Wall;
 		maps[j + 1][x + 1] = Wall;
 	}
 	srand(time(0));
-	int ycords = rand() % (y)+1;
-	int xcords = rand() % (x)+1;
+	int ycords = (rand() % y) + 1;
+	int xcords = (rand() % x) + 1;
 	playercords = { ycords,xcords };
 
 
@@ -130,12 +202,13 @@ vector<vector<string>> init(int y, int x, vector<int>(&playercords)) {
 
 	maps[playercords[0]][playercords[1]] = Player;
 	int flagy;
-		int flagx;
+	int flagx;
+	int maxdistance = (x + y) / 4 - 1;
 	do {
 
-	 flagy = rand() % (y)+1;
-	 flagx = rand() % (x)+1;
-	} while (sqrt(pow((playercords[0]-flagy),2)+ pow((playercords[1] - flagx),2))<=(x+y)/4);
+		flagy = rand() % (y)+1;
+		flagx = rand() % (x)+1;
+	} while (distance(playercords, { flagy,flagx }) <= maxdistance);
 
 	maps[flagy][flagx] = Winflag;
 	return maps;
@@ -148,7 +221,12 @@ bool changemovechar(vector<vector<string>>& maps, vector<int>& playercords, int 
 		return false;
 	}
 	if (maps[newy][newx] == Winflag) {
-		cout << " YOU DID IT !!!!!!!!!!";
+		cout << " You did it !!!"<<endl;
+		cout << " press any key for main menu . " << endl;
+
+		maps[playercords[0]][playercords[1]] = Route;
+		maps[newy][newx] = Player;
+		playercords = { newy,newx };
 		return true;
 	}
 	maps[playercords[0]][playercords[1]] = Route;
@@ -157,7 +235,6 @@ bool changemovechar(vector<vector<string>>& maps, vector<int>& playercords, int 
 	return false;
 
 }
-
 
 
 
