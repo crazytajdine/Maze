@@ -1,6 +1,8 @@
-This is a CMD maze game  that has 2 modes .
-Normal mode : simple maze game
-Dark mode : you should navigate your way in the dark to find your way to the end
+<pre>
+  
+This is a CMD maze game that has 2 modes.
+Normal mode: simple maze game
+Dark mode: you should navigate your way in the dark to find your way to the end
 
 enjoy !
                        ######           ######
@@ -23,3 +25,5 @@ enjoy !
                                #######
                                  ###
                                   #
+
+</pre>
